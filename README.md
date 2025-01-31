@@ -1,3 +1,3 @@
 # airflow-composer
-*This repository contains all data enginerring projects*
+*This repository contains all data engineering projects*
 
