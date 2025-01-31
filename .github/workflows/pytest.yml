@@ -1,0 +1,33 @@
+name: Pytest
+
+on: [pull_request]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ vars.CONTAINER_IMAGE }}
+      options: --platform linux/amd64
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Echo value for container build
+        run: echo "${{ vars.CONTAINER_IMAGE }}"
+
+      - name: Install missing poetry requirements
+        run: |
+          poetry add pendulum=2.0.0
+          poetry add apache-airflow=2.3.4
+          poetry add apache-airflow-providers-datadog=3.1.0
+          poetry add apache-airflow-providers-google=8.3.0
+
+      - name: Create pytest.ini file
+        shell: 'bash'
+        run: printf "[pytest]\npythonpath = \"airflow-composer/dags\"" >> pytest.ini
+
+      - name: Run Pytest
+        run: poetry run pytest airflow-composer/tests

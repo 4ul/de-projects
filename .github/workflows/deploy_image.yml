@@ -1,0 +1,36 @@
+name: Build and deploy image for dev-container
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Updated version of the dev-container image. Example: v1.2.1'
+        required: true
+        type: string
+
+env:
+  IMAGE_NAME: <tbd>
+
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build . --file Dockerfile --tag "$IMAGE_NAME" --label runnumber="${GITHUB_RUN_ID}"
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: Push image
+        run: |
+          IMAGE_ID="$IMAGE_NAME"
+
+          VERSION="${{ inputs.version }}"
+
+          echo IMAGE_ID="$IMAGE_ID"
+          echo VERSION="$VERSION"
+          docker tag "$IMAGE_NAME" "$IMAGE_ID":"$VERSION"
+          docker push "$IMAGE_ID":"$VERSION"

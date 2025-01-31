@@ -1,0 +1,46 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      #- id: check-toml
+      - id: check-json
+  - repo: https://github.com/rhysd/actionlint
+    rev: 'v1.6.26'
+    hooks:
+      - id: actionlint
+  - repo: local
+    hooks:
+      - id: poetry-update
+        name: poetry-update
+        language: system
+        entry: poetry update
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright
+        language: system
+        entry: poetry run pyright
+        types: [python]
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        language: system
+        entry: poetry run black --check
+        types: [python]
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        language: system
+        entry: poetry run ruff
+        types: [python]
+  - repo: local
+    hooks:
+      - id: sqlfluff
+        name: sqlfluff
+        language: system
+        entry: poetry run sqlfluff lint

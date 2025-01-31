@@ -1,0 +1,5 @@
+{
+	"name": "Airflow Composer Environment",
+	"image": "<tbd>",
+	"postAttachCommand": "git config --global --add safe.directory /workspaces/airflow-composer && pre-commit install"
+}

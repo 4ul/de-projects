@@ -1,0 +1,35 @@
+name: Black
+
+on: [pull_request]
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ vars.CONTAINER_IMAGE }}
+      options: --platform linux/amd64
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Echo value for container build
+        run: echo "${{ vars.CONTAINER_IMAGE }}"
+
+      - name: Get modified files
+        id: files
+        uses: jitterbit/get-changed-files@v1
+        with:
+          format: 'csv'
+
+      - name: Run Black
+        shell: 'bash'
+        run: |
+          mapfile -d ',' -t modified_files < <(printf '%s,' '${{ steps.files.outputs.added_modified }}')
+          for file in "${modified_files[@]}"; do
+            if [[ "${file}" == *.py ]]; then
+              poetry run black --check "${file}"
+            fi
+          done
